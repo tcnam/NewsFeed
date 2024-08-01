@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -34,6 +35,7 @@ func main() {
 		server string = "localhost:8080"
 	)
 
+	fmt.Printf("Starting the application at %s", server)
 	http.HandleFunc("/", handlers.HomeHandler)
 	http.HandleFunc("/about", handlers.AboutHandler)
 

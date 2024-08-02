@@ -5,7 +5,9 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/tcnam/golangbe/pkg/config"
 	"github.com/tcnam/golangbe/pkg/handlers"
+	"github.com/tcnam/golangbe/pkg/render"
 )
 
 // func divide(w http.ResponseWriter, r *http.Request) {
@@ -35,9 +37,20 @@ func main() {
 		server string = "localhost:8080"
 	)
 
-	fmt.Printf("Starting the application at %s", server)
-	http.HandleFunc("/", handlers.HomeHandler)
-	http.HandleFunc("/about", handlers.AboutHandler)
+	var app config.AppConfig
+	tc, err := render.InitTemplateCache()
+	if err != nil {
+		log.Printf("Couldn't create template cache")
+	}
+	app.TemplateCache = tc
+	render.NewConfig(&app)
+
+	repo := handlers.NewRepo(&app)
+	handlers.NewHandler(repo)
+
+	fmt.Printf("Starting the application at %s\n", server)
+	http.HandleFunc("/", repo.HomeHandler)
+	http.HandleFunc("/about", repo.AboutHandler)
 
 	log.Fatal(http.ListenAndServe(server, nil))
 }

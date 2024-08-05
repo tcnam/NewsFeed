@@ -1,0 +1,20 @@
+version: '1.0'
+
+services:
+  mysql:
+    image: mysql_rnt9hc
+    container_name: mysql_db
+    attach: false
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: rnt9hc
+      MYSQL_PASSWORD: rnt9hc
+    ports:
+      - "3306:3306"
+    expose:
+      - '3306'
+    volumes:
+      - mysqlvol:/var/lib/mysql
+
+volumes:
+  mysqlvol:

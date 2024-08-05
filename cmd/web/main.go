@@ -36,7 +36,6 @@ func main() {
 	const (
 		server string = "localhost:8080"
 	)
-
 	var app config.AppConfig
 	tc, err := render.InitTemplateCache()
 	if err != nil {
@@ -48,9 +47,10 @@ func main() {
 	repo := handlers.NewRepo(&app)
 	handlers.NewHandler(repo)
 
+	mux := http.NewServeMux()
 	fmt.Printf("Starting the application at %s\n", server)
-	http.HandleFunc("/", repo.HomeHandler)
-	http.HandleFunc("/about", repo.AboutHandler)
+	mux.HandleFunc("GET /", repo.HomeHandler)
+	mux.HandleFunc("GET /about", repo.AboutHandler)
 
-	log.Fatal(http.ListenAndServe(server, nil))
+	log.Fatal(http.ListenAndServe(server, mux))
 }

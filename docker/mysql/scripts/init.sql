@@ -1015,6 +1015,7 @@ VALUES
 ('Edwin Richardson', '2006-07-10', '695.755.1072', 'wellsleslie@example.net', '+wiL3z!i#3', True, '2008-01-02 09:19:34'),
 ('Karina Richmond', '1970-02-25', '784.612.8776x75354', 'biancahale@example.net', '59)JK9u7+L', True, '2020-10-15 03:28:41');
 go
+
 delete 
 from user
 where email in (
@@ -1029,3 +1030,6 @@ from (
 ) ctas1);
 go
 commit;
+
+go
+alter table user ADD CONSTRAINT email_unique UNIQUE (email);

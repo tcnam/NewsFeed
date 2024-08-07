@@ -1,66 +1,89 @@
 package handlers
 
 import (
-	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/tcnam/golangbe/pkg/config"
 	"github.com/tcnam/golangbe/pkg/render"
 )
 
-var Repo *Repository
-
-type Repository struct {
-	App *config.AppConfig
+func WriteJson(w http.ResponseWriter, statuts int, v any) error {
+	w.WriteHeader(statuts)
+	w.Header().Set("Content-Type", "application/json")
+	return json.NewEncoder(w).Encode(v)
 }
 
-func NewRepo(a *config.AppConfig) *Repository {
-	return &Repository{
-		App: a,
-	}
+// default http.HandlerFunc don't have error so we need customize version
+type apiFunc func(http.ResponseWriter, *http.Request) error
+
+type ApiError struct {
+	Error string
 }
 
-func NewHandler(r *Repository) {
-	Repo = r
-}
-
-func (m *Repository) HomeHandler(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "home.html")
-	db, err := sql.Open("mysql", "rnt9hc:rnt9hc@tcp(localhost:3306)/ecomerce")
-	if err != nil {
-		log.Fatalf("Error when connecting to the database: %s\n", err)
-	}
-
-	result, err := db.Query("Select * from user")
-
-	if err != nil {
-		log.Printf("Data can not be fetched: %s\n", err)
-	}
-
-	for result.Next() {
-		var (
-			id           int
-			name         string
-			dob          string
-			phone_number string
-			email        string
-			password     string
-			active       int
-			created_at   string
-		)
-		err := result.Scan(&id, &name, &dob, &phone_number, &email, &password, &active, &created_at)
-
-		if err != nil {
-			log.Printf("Record error: %s", err)
+func makeHTTPHandleFunc(f apiFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if err := f(w, r); err != nil {
+			WriteJson(w, http.StatusBadRequest, ApiError{Error: err.Error()})
 		}
-
-		fmt.Fprintf(w, "Id: %d, name: %s, dob: %s, phone_number: %s, email: %s, password: %s, active: %d, created_at:%s\n", id, name, dob, phone_number, email, password, active, created_at)
 	}
 }
 
-func (m *Repository) AboutHandler(w http.ResponseWriter, r *http.Request) {
+type APIServer struct {
+	listenAddr string
+}
+
+func NewAPIServer(listtenAddr string) *APIServer {
+	return &APIServer{
+		listenAddr: listtenAddr,
+	}
+}
+
+func (s *APIServer) Run() {
+	router := http.NewServeMux()
+
+	log.Printf("JSON API server running on port: %s\n", s.listenAddr)
+
+	router.HandleFunc("/home", makeHTTPHandleFunc(s.handleHome))
+	router.HandleFunc("/about", makeHTTPHandleFunc(s.handleAbout))
+	router.HandleFunc("/user", makeHTTPHandleFunc(s.handleUser))
+
+	http.ListenAndServe(s.listenAddr, router)
+}
+
+func (s *APIServer) handleUser(w http.ResponseWriter, r *http.Request) error {
+	switch r.Method {
+	case "GET":
+		return s.handleGetUser(w, r)
+	case "POST":
+		return s.handleCreateUser(w, r)
+	case "DELETE":
+		return s.handleDeleteUser(w, r)
+	default:
+		return fmt.Errorf("method not allowed: %s", r.Method)
+	}
+}
+
+func (s *APIServer) handleGetUser(w http.ResponseWriter, r *http.Request) error {
+	return nil
+}
+
+func (s *APIServer) handleCreateUser(w http.ResponseWriter, r *http.Request) error {
+	return nil
+}
+
+func (s *APIServer) handleDeleteUser(w http.ResponseWriter, r *http.Request) error {
+	return nil
+}
+
+func (s *APIServer) handleHome(w http.ResponseWriter, r *http.Request) error {
+	render.RenderTemplate(w, "home.html")
+	return nil
+}
+
+func (s *APIServer) handleAbout(w http.ResponseWriter, r *http.Request) error {
 	render.RenderTemplate(w, "about.html")
+	return nil
 }

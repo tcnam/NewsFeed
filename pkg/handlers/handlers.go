@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/tcnam/golangbe/pkg/render"
+	"github.com/tcnam/NewsFeed/pkg/render"
 )
 
 func WriteJson(w http.ResponseWriter, statuts int, v any) error {

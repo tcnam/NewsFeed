@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/tcnam/golangbe/pkg/config"
+	"github.com/tcnam/NewsFeed/pkg/config"
 )
 
 var app *config.AppConfig

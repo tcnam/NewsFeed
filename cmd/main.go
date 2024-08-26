@@ -1,6 +1,6 @@
 package main
 
-import "github.com/tcnam/golangbe/pkg/handlers"
+import "github.com/tcnam/NewsFeed/pkg/handlers"
 
 func main() {
 	const (

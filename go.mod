@@ -1,4 +1,4 @@
-module github.com/tcnam/golangbe
+module github.com/tcnam/NewsFeed
 
 go 1.22.4
 

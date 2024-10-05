@@ -30,5 +30,3 @@ if __name__=="__main__":
     with open(file=Path.joinpath(Path(__name__).parent, "output", "user.txt"), mode="w+") as write_io:
         for user in users:
             write_io.write(f'''('{user["name"]}', '{user["dob"]}', '{user["phone_number"]}', '{user["email"]}', '{user["password"]}', {user["active"]}, '{user["created_at"]}'),\n''')
-
-# %%

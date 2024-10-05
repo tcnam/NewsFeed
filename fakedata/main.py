@@ -18,6 +18,7 @@ def generate_users(n:int, fake:Faker)-> list[dict]:
             , "created_at": fake.date_time().strftime("%Y-%m-%d %H:%M:%S")
         }
         users.append(user)
+        # 
     
     return users
 
